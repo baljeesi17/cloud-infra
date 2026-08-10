@@ -76,13 +76,21 @@ To allow GitHub Actions to deploy resources in your Azure account, you need to c
    ```bash
    az ad sp create-for-rbac --name "github-actions-sp" --role contributor --scopes /subscriptions/YOUR_SUBSCRIPTION_ID --sdk-auth
    ```
-2. Note down the `clientId`, `clientSecret`, `subscriptionId`, and `tenantId` from the output.
-3. Go to your GitHub Repository -> **Settings** -> **Secrets and variables** -> **Actions** -> **New repository secret**.
-4. Add the following four secrets:
-   - `ARM_CLIENT_ID`
-   - `ARM_CLIENT_SECRET`
-   - `ARM_SUBSCRIPTION_ID`
-   - `ARM_TENANT_ID`
+2. **IMPORTANT - Assign Storage Access**: The Contributor role above is not enough to access Terraform State files. You must also assign the `Storage Blob Data Contributor` role to this Service Principal for the storage account you created earlier.
+   ```bash
+   # Get the Object ID of the Service Principal you just created
+   SP_OBJECT_ID=$(az ad sp list --display-name "github-actions-sp" --query "[0].id" -o tsv)
+   
+   # Assign the role
+   az role assignment create --assignee $SP_OBJECT_ID --role "Storage Blob Data Contributor" --scope /subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/rg-terraform-state/providers/Microsoft.Storage/storageAccounts/saterrformstatedemo2026
+   ```
+3. Note down the `clientId`, `clientSecret`, `subscriptionId`, and `tenantId` from the output of step 1.
+4. Go to your GitHub Repository -> **Settings** -> **Secrets and variables** -> **Actions** -> **New repository secret**.
+5. Add the following four secrets:
+   - `AZURE_CLIENT_ID`
+   - `AZURE_CLIENT_SECRET`
+   - `AZURE_SUBSCRIPTION_ID`
+   - `AZURE_TENANT_ID`
 
 *(Documentation: [Use GitHub Actions to connect to Azure](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure))*
 
