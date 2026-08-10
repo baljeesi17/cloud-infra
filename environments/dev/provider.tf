@@ -9,10 +9,11 @@ terraform {
   }
 
   backend "azurerm" {
-    resource_group_name  = "rg-terraform-state"
-    storage_account_name = "saterrformstatedemo2026" # Ensure this is globally unique when you create it
+    resource_group_name  = "rg-alandi"
+    storage_account_name = "alandistorage"
     container_name       = "tfstate"
     key                  = "dev.terraform.tfstate"
+    use_azuread_auth     = true
   }
 }
 
