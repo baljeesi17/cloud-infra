@@ -8,3 +8,4 @@ module "resource_group" {
     ManagedBy   = "Terraform"
   }
 }
+
